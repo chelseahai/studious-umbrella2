@@ -1,67 +1,36 @@
-// main.js
+// Step 1 – Grab DOM elements
+const input = document.querySelector(".zipcode");
+const btn = document.querySelector(".search-button");
 
-import CONFIG from './config.js';
+// Step 2 – Declare the API key
+const API_KEY = config.WEATHER_API_KEY;
 
-// 1. Set up Mapbox map
-mapboxgl.accessToken = CONFIG.MAPBOX_TOKEN;
+// Step 3 – Define the weather fetcher function
+const getWeatherData = (zip) => {
+  const API_ENDPOINT = `https://api.openweathermap.org/data/2.5/weather?zip=${zip}&units=imperial&appid=${API_KEY}`;
 
-const map = new mapboxgl.Map({
-  container: 'map',
-  style: CONFIG.INITIAL_VIEW.style,
-  center: CONFIG.INITIAL_VIEW.center,
-  zoom: CONFIG.INITIAL_VIEW.zoom
-});
-
-// 2. Add navigation controls
-map.addControl(new mapboxgl.NavigationControl());
-
-// 3. Load GeoJSON data from NYC Open Data API
-async function loadData() {
-  try {
-    const response = await fetch(CONFIG.DATA_API_URL);
-    const data = await response.json();
-
-    map.on('load', () => {
-      map.addSource('wifi-locations', {
-        type: 'geojson',
-        data: data
-      });
-
-      map.addLayer({
-        id: 'wifi-points',
-        type: 'circle',
-        source: 'wifi-locations',
-        paint: {
-          'circle-radius': 5,
-          'circle-color': '#007cbf',
-          'circle-opacity': 0.8
-        }
-      });
-
-      // Popup interaction
-      map.on('click', 'wifi-points', (e) => {
-        const coordinates = e.features[0].geometry.coordinates.slice();
-        const properties = e.features[0].properties;
-        const name = properties.name || 'Wi-Fi Location';
-        const provider = properties.provider || 'Unknown Provider';
-
-        new mapboxgl.Popup()
-          .setLngLat(coordinates)
-          .setHTML(`<strong>${name}</strong><br/>Provider: ${provider}`)
-          .addTo(map);
-      });
-
-      map.on('mouseenter', 'wifi-points', () => {
-        map.getCanvas().style.cursor = 'pointer';
-      });
-
-      map.on('mouseleave', 'wifi-points', () => {
-        map.getCanvas().style.cursor = '';
-      });
+  fetch(API_ENDPOINT)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Invalid response from weather API.");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const local_weather_data = data;
+      console.log(local_weather_data); // Inspect the JSON structure
+    })
+    .catch((error) => {
+      console.error("Fetch error:", error);
     });
-  } catch (error) {
-    console.error('Failed to load data:', error);
-  }
-}
+};
 
-loadData();
+// Step 4 – Define the event handler
+const getZipCode = (e) => {
+  e.preventDefault(); // Prevent form submission from reloading the page
+  const ZIP_CODE = input.value;
+  getWeatherData(ZIP_CODE);
+};
+
+// Step 5 – Attach the event listener
+btn.addEventListener("click", getZipCode);

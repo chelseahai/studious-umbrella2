@@ -1,5 +1,3 @@
-style.css
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -18,6 +16,10 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+form {
+  display: flex;
 }
 
 input[type="text"] {
@@ -39,5 +41,19 @@ input::placeholder{
   text-align: center;
   line-height: 40px;
   border: 1px solid #f4f4f4;
+}
+
+.output_component{
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.city_name, .temperature{
+  text-align: center;
+  font-size: 3em;
+  line-height: 1.2em;
+  color: white;
 }
 
