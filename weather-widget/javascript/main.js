@@ -18,4 +18,5 @@ console.log("this works");
 }
 
 getWeatherData()
+
 </body>
